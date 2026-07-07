@@ -117,4 +117,4 @@ Sarathikrr — GitHub: @Sarathikrr
 Project Link: https://github.com/Sarathikrr/Sarathi
 Acknowledgements• •
 Inspiration from gamification principles in modern ed-tech platforms Icons and emojis used for visual flair in this README
-• Thanks to anyone who tests, uses, or contributes to this project! ⭐ If you find this project interesting, consider giving it a star on GitHub — it helps a lot!
+• Thanks to anyone who tests, uses, or contributes to this project!  If you find this project interesting, consider giving it a star on GitHub — it helps a lot!
