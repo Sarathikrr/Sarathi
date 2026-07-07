@@ -108,9 +108,10 @@ Known Issues
 Currently single-file (questly.html) — styles/scripts may be inlined and will be
 modularized in future updates.
 If you spot a bug, feel free to open an issue.
-License
-Distributed under the MIT License. See LICENSE for more information. (Add a LICENSE file if you
-haven’t already.)
+## License
+
+Free to use and adapt for your own projects.
+
 Contact
 Sarathikrr — GitHub: @Sarathikrr
 Project Link: https://github.com/Sarathikrr/Sarathi
