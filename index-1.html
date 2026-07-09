@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questly — Learning, Leveled Up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo"><span class="dot"></span>Questly</div>
+    <div class="nav-links">
+      <a href="#quests">Quests</a>
+      <a href="#guilds">Guilds</a>
+      <a href="#leaderboard">Leaderboard</a>
+      <a href="#reviews">Stories</a>
+    </div>
+    <a href="#cta" class="nav-cta">Start free</a>
+    <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">⚔ Level 1 — New Adventurer</span>
+    <h1 class="hero-title">Learning is better <em>as a game</em> you actually want to win.</h1>
+    <p class="hero-sub">Questly turns real courses into quest lines — earn XP, level up skills, and climb the leaderboard with a guild of learners going after the same goals.</p>
+    <div class="hero-actions">
+      <button class="btn-primary">Begin your quest</button>
+      <a href="#quests" class="btn-ghost">See how it works</a>
+    </div>
+
+    <div class="quest-map" id="quests">
+      <span class="quest-map-label">Your quest path · Foundations of Data Science</span>
+      <svg class="quest-svg" viewBox="0 0 1000 220" preserveAspectRatio="xMidYMid meet">
+        <path class="quest-path" d="M40,160 C160,60 280,220 400,120 C520,20 620,180 740,100 C820,50 880,110 960,60"/>
+        <path class="quest-path-fill" id="drawnPath" d="M40,160 C160,60 280,220 400,120 C520,20 620,180 740,100 C820,50 880,110 960,60"/>
+
+        <g class="node done">
+          <circle class="ring" cx="40" cy="160" r="16"/>
+          <text class="label" x="40" y="200" text-anchor="middle">Basics Camp</text>
+        </g>
+        <g class="node done">
+          <circle class="ring" cx="220" cy="105" r="16"/>
+          <text class="label" x="220" y="145" text-anchor="middle">Logic Forge</text>
+        </g>
+        <g class="node current">
+          <circle class="pulse" cx="400" cy="120" r="16"/>
+          <circle class="ring" cx="400" cy="120" r="16"/>
+          <text class="label" x="400" y="160" text-anchor="middle">Data Dungeon</text>
+        </g>
+        <g class="node">
+          <circle class="ring" cx="580" cy="145" r="16"/>
+          <text class="label" x="580" y="185" text-anchor="middle">Model Wilds</text>
+        </g>
+        <g class="node">
+          <circle class="ring" cx="760" cy="100" r="16"/>
+          <text class="label" x="760" y="65" text-anchor="middle">AI Peak</text>
+        </g>
+        <g class="node">
+          <circle class="ring" cx="960" cy="60" r="16"/>
+          <text class="label" x="960" y="40" text-anchor="middle">Master's Spire</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="wrap">
+    <div class="stat"><div class="num mono" data-count="214" data-suffix="K">0</div><div class="label">Active adventurers</div></div>
+    <div class="stat"><div class="num mono" data-count="38" data-suffix="">0</div><div class="label">Quest lines to master</div></div>
+    <div class="stat"><div class="num mono" data-count="6.2" data-suffix="M" data-decimal="1">0</div><div class="label">Quests completed</div></div>
+    <div class="stat"><div class="num mono" data-count="92" data-suffix="%">0</div><div class="label">Finish what they start</div></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">How it works</span>
+      <h2>Three steps between you and your next level.</h2>
+      <p>No syllabus walls, no dropping off in week two. Just a path, a reason to keep going, and proof of what you've learned.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-index mono">01</div>
+        <h3>Pick your class</h3>
+        <p>Choose a quest line in coding, languages, math, or design. Your starting skill check sets the difficulty right for you.</p>
+      </div>
+      <div class="step">
+        <div class="step-index mono">02</div>
+        <h3>Take on quests</h3>
+        <p>Each lesson is a quest with a clear objective and a boss-level challenge at the end. Beat it, bank the XP.</p>
+      </div>
+      <div class="step">
+        <div class="step-index mono">03</div>
+        <h3>Level up for real</h3>
+        <p>XP unlocks new gear — badges, certificates, and guild rank — that actually shows what you can do.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="guilds">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">Guilds</span>
+      <h2>Pick a guild. Every subject has one.</h2>
+      <p>Guilds are living quest lines — new content drops monthly, and your progress bar never resets.</p>
+    </div>
+    <div class="guilds">
+      <div class="guild-card">
+        <div class="guild-top">
+          <div class="guild-icon" style="background:rgba(232,176,75,0.15);color:var(--gold);">⌨</div>
+          <h3>Code Forge</h3>
+          <p>Python, JavaScript, and the logic underneath both — built quest by quest.</p>
+        </div>
+        <div class="xp-bar"><div class="xp-fill" data-width="68"></div></div>
+        <div class="guild-bottom"><span>Level 14 · Journeyman</span><span>68% XP</span></div>
+      </div>
+      <div class="guild-card">
+        <div class="guild-top">
+          <div class="guild-icon" style="background:rgba(79,189,186,0.15);color:var(--teal);">Σ</div>
+          <h3>Number Dominion</h3>
+          <p>From arithmetic fundamentals to calculus boss fights, at your own pace.</p>
+        </div>
+        <div class="xp-bar"><div class="xp-fill" data-width="41" style="background:var(--teal);"></div></div>
+        <div class="guild-bottom"><span>Level 8 · Apprentice</span><span>41% XP</span></div>
+      </div>
+      <div class="guild-card">
+        <div class="guild-top">
+          <div class="guild-icon" style="background:rgba(232,102,75,0.15);color:var(--coral);">語</div>
+          <h3>Tongue Wilds</h3>
+          <p>Spanish, Japanese, and French quest lines with speaking trials, not just flashcards.</p>
+        </div>
+        <div class="xp-bar"><div class="xp-fill" data-width="23" style="background:var(--coral);"></div></div>
+        <div class="guild-bottom"><span>Level 3 · Novice</span><span>23% XP</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="leaderboard">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">Leaderboard</span>
+      <h2>Your guild is watching your streak.</h2>
+      <p>Weekly resets keep it fair — everyone's chasing the same clock.</p>
+    </div>
+    <div class="board">
+      <div class="board-row head">
+        <span>Rank</span><span>Adventurer</span><span class="xp-col">Streak</span><span>XP</span>
+      </div>
+      <div class="board-row">
+        <span class="rank">01</span>
+        <div class="player"><div class="avatar" style="background:var(--gold);">MK</div>Mira K.</div>
+        <span class="streak xp-col">🔥 44 days</span>
+        <span class="xp-total">12,480</span>
+      </div>
+      <div class="board-row">
+        <span class="rank">02</span>
+        <div class="player"><div class="avatar" style="background:var(--teal);">JT</div>Jonah T.</div>
+        <span class="streak xp-col">🔥 31 days</span>
+        <span class="xp-total">11,920</span>
+      </div>
+      <div class="board-row">
+        <span class="rank">03</span>
+        <div class="player"><div class="avatar" style="background:var(--coral);">AS</div>Amara S.</div>
+        <span class="streak xp-col">🔥 29 days</span>
+        <span class="xp-total">10,775</span>
+      </div>
+      <div class="board-row">
+        <span class="rank">04</span>
+        <div class="player"><div class="avatar" style="background:#8B7BC7;">DL</div>Devon L.</div>
+        <span class="streak xp-col">🔥 18 days</span>
+        <span class="xp-total">9,340</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">From the guild hall</span>
+      <h2>Adventurers who kept showing up.</h2>
+    </div>
+    <div class="reviews">
+      <div class="review">
+        <div class="stars">★★★★★</div>
+        <p>I've quit four other learning apps. The quest path is the first thing that made me want to open it every night — not just Duolingo guilt.</p>
+        <div class="review-who">
+          <div class="avatar" style="background:var(--gold);">RP</div>
+          <div><div class="name">Reina P.</div><div class="role">Code Forge, Level 22</div></div>
+        </div>
+      </div>
+      <div class="review">
+        <div class="stars">★★★★★</div>
+        <p>My study group turned into a guild. Watching everyone's streak on the leaderboard is somehow more motivating than any deadline ever was.</p>
+        <div class="review-who">
+          <div class="avatar" style="background:var(--teal);">OC</div>
+          <div><div class="name">Omar C.</div><div class="role">Number Dominion, Level 15</div></div>
+        </div>
+      </div>
+      <div class="review">
+        <div class="stars">★★★★★</div>
+        <p>The boss-level challenges actually check if you understood the lesson, not just if you clicked through it. I trust my badges now.</p>
+        <div class="review-who">
+          <div class="avatar" style="background:var(--coral);">HN</div>
+          <div><div class="name">Hana N.</div><div class="role">Tongue Wilds, Level 9</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="cta">
+  <div class="wrap">
+    <div class="cta-band">
+      <h2>Your first quest is waiting.</h2>
+      <p>Pick a guild, take the placement trial, and see where you start. No credit card, no syllabus — just XP.</p>
+      <button class="btn-primary">Create your character</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="logo"><span class="dot"></span>Questly</div>
+    <div class="foot-links">
+      <a href="#quests">Quests</a>
+      <a href="#guilds">Guilds</a>
+      <a href="#leaderboard">Leaderboard</a>
+      <a href="#reviews">Stories</a>
+    </div>
+    <span class="copyright">© 2026 Questly. Keep your streak alive.</span>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
