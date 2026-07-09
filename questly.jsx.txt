@@ -1,0 +1,426 @@
+import { useState, useEffect, useCallback } from "react";
+import { Sword, Flame, Trophy, Sparkles, ChevronRight, X } from "lucide-react";
+
+const GUILDS = [
+  {
+    id: "code",
+    name: "Code Forge",
+    icon: "⌨",
+    color: "#E8B04B",
+    blurb: "Python, JavaScript, and the logic underneath both.",
+    quests: [
+      { id: "c1", name: "Basics Camp", xp: 50 },
+      { id: "c2", name: "Logic Forge", xp: 75 },
+      { id: "c3", name: "Data Dungeon", xp: 100 },
+      { id: "c4", name: "Model Wilds", xp: 125 },
+      { id: "c5", name: "AI Peak", xp: 150 },
+    ],
+  },
+  {
+    id: "math",
+    name: "Number Dominion",
+    icon: "Σ",
+    color: "#4FBDBA",
+    blurb: "From arithmetic fundamentals to calculus boss fights.",
+    quests: [
+      { id: "m1", name: "Digit Plains", xp: 50 },
+      { id: "m2", name: "Algebra Keep", xp: 75 },
+      { id: "m3", name: "Geometry Spire", xp: 100 },
+      { id: "m4", name: "Calculus Chasm", xp: 125 },
+      { id: "m5", name: "Proof Summit", xp: 150 },
+    ],
+  },
+  {
+    id: "lang",
+    name: "Tongue Wilds",
+    icon: "語",
+    color: "#E8664B",
+    blurb: "Spanish, Japanese, and French with speaking trials.",
+    quests: [
+      { id: "l1", name: "Phrase Grove", xp: 50 },
+      { id: "l2", name: "Grammar Marsh", xp: 75 },
+      { id: "l3", name: "Dialogue Ruins", xp: 100 },
+      { id: "l4", name: "Fluency Cliffs", xp: 125 },
+      { id: "l5", name: "Native Peak", xp: 150 },
+    ],
+  },
+];
+
+const XP_PER_LEVEL = 200;
+const levelFromXp = (xp) => Math.floor(xp / XP_PER_LEVEL) + 1;
+
+export default function Questly() {
+  const [loading, setLoading] = useState(true);
+  const [player, setPlayer] = useState(null); // { id, name, guildId, xp, done: [] }
+  const [nameInput, setNameInput] = useState("");
+  const [showCreate, setShowCreate] = useState(false);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [toast, setToast] = useState("");
+
+  const flashToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(""), 2200);
+  };
+
+  const loadLeaderboard = useCallback(async () => {
+    try {
+      const list = await window.storage.list("leaderboard:", true);
+      if (!list || !list.keys) return;
+      const entries = [];
+      for (const k of list.keys) {
+        try {
+          const r = await window.storage.get(k, true);
+          if (r && r.value) entries.push(JSON.parse(r.value));
+        } catch {}
+      }
+      entries.sort((a, b) => b.xp - a.xp);
+      setLeaderboard(entries.slice(0, 8));
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const saved = await window.storage.get("character", false);
+        if (saved && saved.value) {
+          setPlayer(JSON.parse(saved.value));
+        }
+      } catch {
+        // no character yet
+      }
+      await loadLeaderboard();
+      setLoading(false);
+    })();
+  }, [loadLeaderboard]);
+
+  const createCharacter = async (guildId) => {
+    const name = nameInput.trim() || "Adventurer";
+    const id = "p" + Math.random().toString(36).slice(2, 9);
+    const newPlayer = { id, name, guildId, xp: 0, done: [] };
+    setPlayer(newPlayer);
+    setShowCreate(false);
+    try {
+      await window.storage.set("character", JSON.stringify(newPlayer), false);
+      await window.storage.set(
+        `leaderboard:${id}`,
+        JSON.stringify({ id, name, xp: 0, guildId }),
+        true
+      );
+    } catch {}
+    await loadLeaderboard();
+    flashToast(`Welcome, ${name}. Your quest begins.`);
+  };
+
+  const completeQuest = async (quest) => {
+    if (!player || player.done.includes(quest.id)) return;
+    const updated = {
+      ...player,
+      xp: player.xp + quest.xp,
+      done: [...player.done, quest.id],
+    };
+    setPlayer(updated);
+    try {
+      await window.storage.set("character", JSON.stringify(updated), false);
+      await window.storage.set(
+        `leaderboard:${updated.id}`,
+        JSON.stringify({
+          id: updated.id,
+          name: updated.name,
+          xp: updated.xp,
+          guildId: updated.guildId,
+        }),
+        true
+      );
+    } catch {}
+    await loadLeaderboard();
+    flashToast(`+${quest.xp} XP — ${quest.name} cleared!`);
+  };
+
+  const resetCharacter = async () => {
+    try {
+      await window.storage.delete("character", false);
+    } catch {}
+    setPlayer(null);
+  };
+
+  const guild = player ? GUILDS.find((g) => g.id === player.guildId) : null;
+  const level = player ? levelFromXp(player.xp) : 1;
+  const xpIntoLevel = player ? player.xp % XP_PER_LEVEL : 0;
+  const xpPct = Math.min(100, Math.round((xpIntoLevel / XP_PER_LEVEL) * 100));
+
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#12172B",
+        color: "#F1E7D3",
+        fontFamily: "'Inter', system-ui, sans-serif",
+      }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap');
+        .qh { font-family:'Space Grotesk',sans-serif; }
+        .qm { font-family:'JetBrains Mono',monospace; }
+        .qbtn { transition: transform .15s ease, filter .15s ease; }
+        .qbtn:hover { transform: translateY(-1px); filter: brightness(1.08); }
+        .qcard { transition: transform .15s ease, border-color .15s ease; }
+        .qcard:hover { transform: translateY(-2px); border-color: rgba(241,231,211,0.35) !important; }
+      `}</style>
+
+      {/* Nav */}
+      <div
+        style={{
+          borderBottom: "1px solid rgba(241,231,211,0.12)",
+          padding: "16px 24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <div className="qh" style={{ display: "flex", alignItems: "center", gap: 8, fontWeight: 700, fontSize: 20 }}>
+          <span style={{ width: 8, height: 8, borderRadius: 999, background: "#E8B04B", display: "inline-block" }} />
+          Questly
+        </div>
+        {player && (
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <span className="qm" style={{ fontSize: 13, color: "rgba(241,231,211,0.62)" }}>
+              Lv.{level} · {player.name}
+            </span>
+            <button
+              onClick={resetCharacter}
+              className="qbtn"
+              style={{
+                background: "transparent",
+                border: "1px solid rgba(241,231,211,0.25)",
+                color: "#F1E7D3",
+                borderRadius: 8,
+                padding: "6px 12px",
+                fontSize: 12,
+                cursor: "pointer",
+              }}
+            >
+              New character
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "40px 24px 80px" }}>
+        {loading ? (
+          <p style={{ color: "rgba(241,231,211,0.5)" }}>Loading your quest log…</p>
+        ) : !player ? (
+          <CreateCharacter
+            nameInput={nameInput}
+            setNameInput={setNameInput}
+            onPick={createCharacter}
+          />
+        ) : (
+          <>
+            {/* Player status */}
+            <div
+              style={{
+                background: "#1B2140",
+                border: "1px solid rgba(241,231,211,0.12)",
+                borderRadius: 16,
+                padding: 24,
+                marginBottom: 32,
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <div>
+                  <div className="qh" style={{ fontSize: 22, fontWeight: 700 }}>
+                    {guild?.icon} {guild?.name}
+                  </div>
+                  <div style={{ fontSize: 13, color: "rgba(241,231,211,0.62)" }}>{guild?.blurb}</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div className="qm" style={{ fontSize: 20, fontWeight: 700, color: guild?.color }}>
+                    {player.xp} XP
+                  </div>
+                  <div style={{ fontSize: 12, color: "rgba(241,231,211,0.5)" }}>Level {level}</div>
+                </div>
+              </div>
+              <div style={{ height: 8, background: "rgba(241,231,211,0.1)", borderRadius: 999, overflow: "hidden" }}>
+                <div
+                  style={{
+                    width: `${xpPct}%`,
+                    height: "100%",
+                    background: guild?.color,
+                    transition: "width .4s ease",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Quests */}
+            <h2 className="qh" style={{ fontSize: 20, marginBottom: 16 }}>Your quest line</h2>
+            <div style={{ display: "grid", gap: 10, marginBottom: 40 }}>
+              {guild.quests.map((q) => {
+                const done = player.done.includes(q.id);
+                return (
+                  <div
+                    key={q.id}
+                    className="qcard"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      background: "#1B2140",
+                      border: "1px solid rgba(241,231,211,0.1)",
+                      borderRadius: 12,
+                      padding: "14px 18px",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <Sword size={16} color={done ? guild.color : "rgba(241,231,211,0.4)"} />
+                      <span style={{ fontWeight: 500, textDecoration: done ? "line-through" : "none", opacity: done ? 0.6 : 1 }}>
+                        {q.name}
+                      </span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <span className="qm" style={{ fontSize: 12, color: "rgba(241,231,211,0.5)" }}>+{q.xp} XP</span>
+                      <button
+                        onClick={() => completeQuest(q)}
+                        disabled={done}
+                        className="qbtn"
+                        style={{
+                          background: done ? "rgba(241,231,211,0.08)" : guild.color,
+                          color: done ? "rgba(241,231,211,0.4)" : "#12172B",
+                          border: "none",
+                          borderRadius: 8,
+                          padding: "7px 14px",
+                          fontSize: 12,
+                          fontWeight: 600,
+                          cursor: done ? "default" : "pointer",
+                        }}
+                      >
+                        {done ? "Cleared" : "Complete"}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {/* Leaderboard - shared database across all users */}
+        <h2 className="qh" style={{ fontSize: 20, marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
+          <Trophy size={18} color="#E8B04B" /> Leaderboard
+        </h2>
+        <p style={{ fontSize: 12, color: "rgba(241,231,211,0.45)", marginBottom: 16 }}>
+          Shared across everyone who plays Questly here.
+        </p>
+        <div style={{ background: "#1B2140", border: "1px solid rgba(241,231,211,0.12)", borderRadius: 12, overflow: "hidden" }}>
+          {leaderboard.length === 0 ? (
+            <div style={{ padding: 20, fontSize: 13, color: "rgba(241,231,211,0.5)" }}>
+              No adventurers yet — be the first to log XP.
+            </div>
+          ) : (
+            leaderboard.map((p, i) => {
+              const g = GUILDS.find((g) => g.id === p.guildId);
+              return (
+                <div
+                  key={p.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "12px 18px",
+                    borderTop: i === 0 ? "none" : "1px solid rgba(241,231,211,0.08)",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <span className="qm" style={{ fontSize: 12, color: "rgba(241,231,211,0.4)", width: 20 }}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span style={{ fontWeight: 500 }}>{p.name}</span>
+                    <span style={{ fontSize: 12, color: g?.color }}>{g?.icon} {g?.name}</span>
+                  </div>
+                  <span className="qm" style={{ fontWeight: 700, color: "#E8B04B" }}>{p.xp} XP</span>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      {toast && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 24,
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "#232B52",
+            border: "1px solid rgba(241,231,211,0.2)",
+            borderRadius: 10,
+            padding: "10px 18px",
+            fontSize: 13,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <Sparkles size={14} color="#E8B04B" /> {toast}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CreateCharacter({ nameInput, setNameInput, onPick }) {
+  return (
+    <div>
+      <h1 className="qh" style={{ fontSize: 30, fontWeight: 700, marginBottom: 8 }}>
+        Create your character
+      </h1>
+      <p style={{ color: "rgba(241,231,211,0.62)", marginBottom: 24, maxWidth: 480 }}>
+        Pick a name and a guild. Your progress and XP are saved automatically, and your
+        best runs show up on the shared leaderboard below.
+      </p>
+      <input
+        value={nameInput}
+        onChange={(e) => setNameInput(e.target.value)}
+        placeholder="Your adventurer name"
+        style={{
+          width: "100%",
+          maxWidth: 340,
+          background: "#1B2140",
+          border: "1px solid rgba(241,231,211,0.2)",
+          borderRadius: 10,
+          padding: "10px 14px",
+          color: "#F1E7D3",
+          fontSize: 14,
+          marginBottom: 24,
+          outline: "none",
+        }}
+      />
+      <div style={{ display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+        {GUILDS.map((g) => (
+          <button
+            key={g.id}
+            onClick={() => onPick(g.id)}
+            className="qbtn qcard"
+            style={{
+              textAlign: "left",
+              background: "#1B2140",
+              border: "1px solid rgba(241,231,211,0.12)",
+              borderRadius: 14,
+              padding: 20,
+              cursor: "pointer",
+              color: "#F1E7D3",
+            }}
+          >
+            <div style={{ fontSize: 24, marginBottom: 10, color: g.color }}>{g.icon}</div>
+            <div className="qh" style={{ fontWeight: 700, marginBottom: 6 }}>{g.name}</div>
+            <div style={{ fontSize: 13, color: "rgba(241,231,211,0.6)", marginBottom: 12 }}>{g.blurb}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: g.color, fontWeight: 600 }}>
+              Start quest <ChevronRight size={14} />
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
